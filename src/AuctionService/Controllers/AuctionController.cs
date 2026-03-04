@@ -26,6 +26,7 @@ public class AuctionController: ControllerBase
     }
 
 
+    //get request
     [HttpGet]
     public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions()
     {
@@ -37,6 +38,7 @@ public class AuctionController: ControllerBase
         return mapper.Map<List<AuctionDto>>(auctions);
     }
 
+    //get request za id
     [HttpGet("{id}")]
     public async Task<ActionResult<AuctionDto>> GetAuctionById(Guid id)
     {
