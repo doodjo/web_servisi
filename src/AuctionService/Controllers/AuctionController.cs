@@ -1,5 +1,7 @@
+using System.Runtime.CompilerServices;
 using AuctionSerivce.DTOs;
 using AuctionService.Data;
+using AuctionService.Entities;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +28,7 @@ public class AuctionController: ControllerBase
     }
 
 
-    //get request
+    
     [HttpGet]
     public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions()
     {
@@ -38,7 +40,7 @@ public class AuctionController: ControllerBase
         return mapper.Map<List<AuctionDto>>(auctions);
     }
 
-    //get request za id
+    
     [HttpGet("{id}")]
     public async Task<ActionResult<AuctionDto>> GetAuctionById(Guid id)
     {
@@ -49,5 +51,61 @@ public class AuctionController: ControllerBase
         if (auction == null) return NotFound();
 
         return mapper.Map<AuctionDto>(auction);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<AuctionDto>> CreateAuction(CreateAuctionDto auctionDto)
+    {
+        var auction = mapper.Map<Auction>(auctionDto);
+        // todo add current user as seller
+
+        auction.Seller = "test";
+
+        context.Auctions.Add(auction);
+
+        var result = await context.SaveChangesAsync() > 0;
+
+        if (!result) return BadRequest("Could not save changes to db");
+
+        return CreatedAtAction(nameof(GetAuctionById), new {auction.Id}, mapper.Map<AuctionDto>(auction));
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateAuction(Guid id, UpdateAuctionDto updateAuctionDto)
+    {
+        var auction = await context.Auctions.Include(x => x.Item).FirstOrDefaultAsync(x => x.Id == id);
+
+        if (auction == null) return NotFound();
+
+        //todo check seller username
+
+        auction.Item.Make = updateAuctionDto.Make ?? auction.Item.Make;
+        auction.Item.Model = updateAuctionDto.Model ?? auction.Item.Model;
+        auction.Item.Colour = updateAuctionDto.Colour ?? auction.Item.Colour;
+        auction.Item.Year = updateAuctionDto.Year ?? auction.Item.Year;
+        
+        var result = await context.SaveChangesAsync() > 0;
+
+        if (result) return Ok();
+
+        return BadRequest("Updating problem kod AuctionController za UpdateAuctionDto");
+
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteAuction(Guid id)
+    {
+        var auction = await context.Auctions.FindAsync(id);
+
+        if (auction == null) return NotFound();
+
+        context.Auctions.Remove(auction);
+
+         var result = await context.SaveChangesAsync() > 0;
+
+         if (!result) return BadRequest("Could not update the db");
+
+         return Ok();
+
     }
 }
