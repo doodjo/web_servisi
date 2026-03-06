@@ -28,7 +28,7 @@ public class AuctionController: ControllerBase
     }
 
 
-    
+
     [HttpGet]
     public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions()
     {
@@ -53,6 +53,7 @@ public class AuctionController: ControllerBase
         return mapper.Map<AuctionDto>(auction);
     }
 
+    // post request
     [HttpPost]
     public async Task<ActionResult<AuctionDto>> CreateAuction(CreateAuctionDto auctionDto)
     {
@@ -70,6 +71,7 @@ public class AuctionController: ControllerBase
         return CreatedAtAction(nameof(GetAuctionById), new {auction.Id}, mapper.Map<AuctionDto>(auction));
     }
 
+    //put request
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateAuction(Guid id, UpdateAuctionDto updateAuctionDto)
     {
@@ -92,6 +94,7 @@ public class AuctionController: ControllerBase
 
     }
 
+    // delete request
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteAuction(Guid id)
     {
