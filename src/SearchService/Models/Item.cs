@@ -2,7 +2,7 @@ using MongoDB.Entities;
 
 namespace SearchService;
 
-class Item : Entity
+public class Item : Entity
 {
    
     public int ReservePrice { get; set; }
